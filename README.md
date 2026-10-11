@@ -35,5 +35,7 @@ flutter run
 
 ## Rendu
 
-- `rendu/images` : captures d'écran de l'application
-- `rendu/video` : vidéo de démonstration
+- **`rendu/image`** : capture d'écran de l'application (catégorie **Formules** sélectionnée, plusieurs plats affichés)
+- **`rendu/video`** : vidéo de démonstration ([presentation_video.mp4](rendu/video/presentation_video.mp4))
+
+![Capture de l'application](rendu/image/Capture%20d'%C3%A9cran%202026-10-11%20194617.png)
