@@ -18,9 +18,10 @@ class MenuApp extends StatelessWidget {
       title: 'Menu du Restaurant',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        // Rouge pour rappeler Buffalo Grill
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
       ),
-      home: const MenuPage(title: 'Menu du Restaurant Le Comptoir'),
+      home: const MenuPage(title: 'Menu du Restaurant Buffalo Grill'),
     );
   }
 }
@@ -36,53 +37,51 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  String _categorieSelectionnee = categories.first.nom;
+  String _categorieSelectionnee = categories[0].nom;
 
-  void _changerCategorie(String nom) {
+  void _changerCategorie(String categorie) {
     setState(() {
-      _categorieSelectionnee = nom;
+      _categorieSelectionnee = categorie;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Plat> platsAffiches = plats
-        .where((plat) => plat.categorie == _categorieSelectionnee)
-        .toList();
+    // On garde seulement les plats de la catégorie sélectionnée
+    List<Plat> platsAffiches = [];
+    for (Plat plat in plats) {
+      if (plat.categorie == _categorieSelectionnee) {
+        platsAffiches.add(plat);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      // Column : barre des catégories en haut, liste des plats en dessous.
-      body: SafeArea(
-        child: Column(
-          children: [
-            CategorieBar(
-              categories: categories,
-              selection: _categorieSelectionnee,
-              onSelection: _changerCategorie,
-            ),
-            const Divider(height: 1),
-            // Expanded obligatoire : une ListView dans une Column doit avoir
-            // une hauteur bornée, sinon Flutter lève une erreur de layout.
-            Expanded(
-              child: platsAffiches.isEmpty
-                  ? const Center(child: Text('Aucun plat dans cette catégorie'))
-                  : ListView.builder(
-                      // La clé change avec la catégorie : la liste repart en haut
-                      // au lieu de garder la position de scroll précédente.
-                      key: ValueKey(_categorieSelectionnee),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: platsAffiches.length,
-                      itemBuilder: (context, index) {
-                        return PlatCard(plat: platsAffiches[index]);
-                      },
-                    ),
-            ),
-          ],
+        backgroundColor: Colors.red,
+        title: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.white),
         ),
+      ),
+      // Column : barre des catégories en haut, liste des plats en dessous
+      body: Column(
+        children: [
+          CategorieBar(
+            categories: categories,
+            selection: _categorieSelectionnee,
+            onSelection: _changerCategorie,
+          ),
+          // Expanded obligatoire : une ListView dans une Column doit avoir
+          // une hauteur limitée, sinon Flutter affiche une erreur de layout
+          Expanded(
+            child: ListView.builder(
+              itemCount: platsAffiches.length,
+              itemBuilder: (context, index) {
+                return PlatCard(plat: platsAffiches[index]);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

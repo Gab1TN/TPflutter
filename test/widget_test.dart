@@ -6,12 +6,12 @@ void main() {
   testWidgets('Changement de catégorie', (WidgetTester tester) async {
     await tester.pumpWidget(const MenuApp());
 
-    expect(find.text('Formule Midi'), findsOneWidget);
+    expect(find.text('Hold-Up'), findsOneWidget);
 
     await tester.tap(find.text('Desserts'));
     await tester.pump();
 
-    expect(find.text('Crème brûlée'), findsOneWidget);
-    expect(find.text('Formule Midi'), findsNothing);
+    expect(find.text('Brownie'), findsOneWidget);
+    expect(find.text('Hold-Up'), findsNothing);
   });
 }

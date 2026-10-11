@@ -12,31 +12,41 @@ class CategorieBar extends StatelessWidget {
 
   final List<Categorie> categories;
   final String selection;
-  final ValueChanged<String> onSelection;
+  final Function(String) onSelection;
 
   @override
   Widget build(BuildContext context) {
+    // Un bouton par catégorie, rouge si c'est la catégorie sélectionnée
+    List<Widget> boutons = [];
+    for (Categorie categorie in categories) {
+      boutons.add(
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: ElevatedButton(
+            onPressed: () => onSelection(categorie.nom),
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  categorie.nom == selection ? Colors.red : Colors.grey[200],
+            ),
+            child: Text(
+              categorie.nom,
+              style: TextStyle(
+                color: categorie.nom == selection ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     // Row demandée par le sujet pour la barre de catégories.
     // On l'entoure d'un SingleChildScrollView horizontal pour que les
-    // étiquettes restent accessibles même si elles dépassent la largeur de l'écran.
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: categories.map((categorie) {
-          final bool estSelectionnee = categorie.nom == selection;
-
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              avatar: Icon(categorie.icone, size: 18),
-              label: Text(categorie.nom),
-              selected: estSelectionnee,
-              showCheckmark: false,
-              onSelected: (_) => onSelection(categorie.nom),
-            ),
-          );
-        }).toList(),
+    // boutons restent accessibles s'ils dépassent la largeur de l'écran.
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(children: boutons),
       ),
     );
   }

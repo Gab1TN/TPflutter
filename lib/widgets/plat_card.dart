@@ -10,99 +10,63 @@ class PlatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Image plus grande quand l'écran est large (paysage)
+    final largeurEcran = MediaQuery.of(context).size.width;
+    final double tailleImage = largeurEcran > 600 ? 140 : 100;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: 3,
-      // Clip pour que l'image suive les coins arrondis de la Card
-      clipBehavior: Clip.antiAlias,
-      // LayoutBuilder pour adapter la carte à la largeur disponible :
-      // - écran étroit (portrait) : image au-dessus du texte (Column)
-      // - écran large (paysage) : image à gauche du texte (Row)
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth > 500) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 200, height: 140, child: _buildImage()),
-                Expanded(child: _buildInfos(context)),
-              ],
-            );
-          }
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 160, child: _buildImage()),
-              _buildInfos(context),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildImage() {
-    return Image.network(
-      plat.image,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, progression) {
-        if (progression == null) return child;
-        return const Center(child: CircularProgressIndicator());
-      },
-      // Si l'image ne charge pas (pas de réseau), on affiche une icône à la place
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          color: Colors.grey.shade200,
-          child: const Center(
-            child: Icon(Icons.restaurant, size: 48, color: Colors.grey),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildInfos(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Nom à gauche, prix à droite. Expanded sur le nom pour qu'un nom
-          // long passe à la ligne au lieu de pousser le prix hors de la carte.
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  plat.nom,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        // Row : image à gauche, informations du plat à droite
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: tailleImage,
+              height: tailleImage,
+              color: Colors.grey.shade200,
+              child: Image.asset(plat.image),
+            ),
+            const SizedBox(width: 12),
+            // Expanded pour que le texte prenne la place restante
+            // et passe à la ligne au lieu de dépasser de la carte
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          plat.nom,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        plat.prixFormate,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                  const SizedBox(height: 6),
+                  Text(
+                    plat.description,
+                    style: TextStyle(color: Colors.grey.shade700),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                plat.prixFormate,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          // Description limitée à 2 lignes comme demandé
-          Text(
-            plat.description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.grey.shade700),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
